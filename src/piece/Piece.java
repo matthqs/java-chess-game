@@ -93,13 +93,8 @@ public class Piece {
         return false;
     }
 
-    public Piece getHittingP(int targetCol, int targetRow){
-        for(Piece piece : GamePanel.simPieces) {
-            if(piece.col == targetCol && piece.row == targetRow && piece != this) {
-                return piece;
-            }
-        }
-        return null;
+    public boolean isSameSquare(int targetCol, int targetRow){
+        return targetCol == preCol && targetRow == preRow;
     }
 
     public boolean isValidSquare(int targetCol, int targetRow){
@@ -119,6 +114,61 @@ public class Piece {
 
         return false;
     }
+
+    public boolean pieceIsOnStraightLine(int targetCol, int targetRow){
+        // when moving to the left
+        for(int c = preCol-1; c > targetCol; c--) {
+            for(Piece piece : GamePanel.simPieces) {
+                if(piece.col == c && piece.row == targetRow) {
+                    hittingP = piece;
+                    return true;
+                }
+            }
+        }
+
+        // when moving to the right
+        for(int c = preCol+1; c < targetCol; c++) {
+            for(Piece piece : GamePanel.simPieces) {
+                if(piece.col == c && piece.row == targetRow) {
+                    hittingP = piece;
+                    return true;
+                }
+            }
+        }
+
+        // when moving up
+
+        for(int r = preRow-1; r > targetRow; r--) {
+            for(Piece piece : GamePanel.simPieces) {
+                if(piece.col == targetCol && piece.row == r) {
+                    hittingP = piece;
+                    return true;
+                }
+            }
+        }
+
+        // when moving down
+        for(int r = preRow+1; r < targetRow; r++) {
+            for(Piece piece : GamePanel.simPieces) {
+                if(piece.col == targetCol && piece.row == r) {
+                    hittingP = piece;
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public Piece getHittingP(int targetCol, int targetRow){
+        for(Piece piece : GamePanel.simPieces) {
+            if(piece.col == targetCol && piece.row == targetRow && piece != this) {
+                return piece;
+            }
+        }
+        return null;
+    }
+
 
     public void draw(Graphics2D g2){
         g2.drawImage(image, x, y, Board.SQUARE_SIZE, Board.SQUARE_SIZE, null);
