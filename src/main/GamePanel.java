@@ -26,6 +26,10 @@ public class GamePanel extends JPanel implements Runnable{
     public static final int BLACK = 1;
     int currentColor = WHITE;
 
+    // BOOLEANS FOR MOVEMENT
+    boolean canMove;
+    boolean validSquare;
+
     public GamePanel(){
         setPreferredSize(new Dimension(WIDTH,HEIGHT));
         setBackground(Color.black);
@@ -61,7 +65,7 @@ public class GamePanel extends JPanel implements Runnable{
         pieces.add(new Bishop(WHITE, 2, 7));
         pieces.add(new Bishop(WHITE, 5, 7));
         pieces.add(new Queen(WHITE, 3, 7));
-        pieces.add(new King(WHITE, 4, 7));
+        pieces.add(new King(WHITE, 4, 4));
 
         // BLACK SIDE
         pieces.add(new Pawn(BLACK, 0, 1));
@@ -139,9 +143,17 @@ public class GamePanel extends JPanel implements Runnable{
         // MOUSE BUTTON RELEASE
         // Drop the piece in the col/row it is and clear the piece from the mouse
         if(!mouse.pressed){
+
             if(activeP != null){
-                activeP.updatePosition();
-                activeP = null;
+
+                if(validSquare){
+                    activeP.updatePosition();
+                }
+                else {
+                    activeP.resetPosition();
+                    activeP = null;
+                }
+
             }
         }
 
@@ -149,11 +161,28 @@ public class GamePanel extends JPanel implements Runnable{
 
     private void simulate() {
 
+        canMove = false;
+        validSquare = false;
+
+        ArrayList<Piece> piecesToRemove = new ArrayList<>();
+
+
         // If a piece is being held, update its position
         activeP.x = mouse.x - Board.HALF_SQUARE_SIZE;
         activeP.y = mouse.y - Board.HALF_SQUARE_SIZE;
         activeP.col = activeP.getCol(activeP.x);
         activeP.row = activeP.getRow(activeP.y);
+
+        if(activeP.canMove(activeP.col, activeP.row)){
+            canMove = true;
+
+            if(activeP.hittingP != null) {
+                activeP.hittingP.getIndex();
+                simPieces.remove(activeP.hittingP.getIndex());
+            }
+
+            validSquare = true;
+        }
 
     }
 
@@ -166,19 +195,25 @@ public class GamePanel extends JPanel implements Runnable{
         // Draw the game board
         board.draw(g2);
 
+        // Create a copy of simPieces to avoid ConcurrentModificationException
+        ArrayList<Piece> piecesCopy = new ArrayList<>(simPieces);
+
         // Draw all pieces
-        for (Piece p : simPieces) {
+        for (Piece p : piecesCopy) {
             p.draw(g2);
         }
 
         if(activeP != null){
-            // Color the square in which piece is being held up before moving
-            Color myColor = new Color(130, 227, 133); // Red in RGB
-            g2.setColor(myColor);
-            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
-            g2.fillRect(activeP.col*Board.SQUARE_SIZE, activeP.row*Board.SQUARE_SIZE,
-                    Board.SQUARE_SIZE, Board.SQUARE_SIZE);
-            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f));
+
+            if(canMove){
+                // Color the square in which piece is being held up before moving
+                Color myColor = new Color(130, 227, 133); // Red in RGB
+                g2.setColor(myColor);
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
+                g2.fillRect(activeP.col*Board.SQUARE_SIZE, activeP.row*Board.SQUARE_SIZE,
+                        Board.SQUARE_SIZE, Board.SQUARE_SIZE);
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f));
+            }
 
             // Redraw the piece so it doesn't get its opacity changed
             activeP.draw(g2);
