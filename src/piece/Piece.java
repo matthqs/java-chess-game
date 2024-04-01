@@ -169,6 +169,62 @@ public class Piece {
         return null;
     }
 
+    public boolean isPieceOnDiagonalLine(int targetCol, int targetRow){
+            // top left
+            if(targetRow < preRow){
+                for (int c = preCol-1; c > targetCol; c--){
+                    int diff = Math.abs(c - preCol);
+                    for(Piece piece : GamePanel . simPieces) {
+                        if(piece.col == c &&  piece.row == preRow - diff) {
+                            hittingP = piece;
+                            return true;
+                        }
+                    }
+                }
+
+                // top right
+                for (int c = preCol+1; c < targetCol; c++){
+                    int diff = Math.abs(c - preCol);
+                    for(Piece piece : GamePanel . simPieces) {
+                        if(piece.col == c &&  piece.row == preRow - diff) {
+                            hittingP = piece;
+                            return true;
+                        }
+                    }
+                }
+
+            }
+
+            if(targetRow > preRow){
+                //bottom left
+                for (int c = preCol-1; c > targetCol; c--){
+                    int diff = Math.abs(c - preCol);
+                    for(Piece piece : GamePanel . simPieces) {
+                        if(piece.col == c &&  piece.row == preRow + diff) {
+                            hittingP = piece;
+                            return true;
+                        }
+                    }
+                }
+
+                //bottom right
+                for (int c = preCol+1; c < targetCol; c++){
+                    int diff = Math.abs(c - preCol);
+                    for(Piece piece : GamePanel . simPieces) {
+                        if(piece.col == c &&  piece.row == preRow + diff) {
+                            hittingP = piece;
+                            return true;
+                        }
+                    }
+                }
+
+
+
+            }
+
+        return false;
+    }
+
 
     public void draw(Graphics2D g2){
         g2.drawImage(image, x, y, Board.SQUARE_SIZE, Board.SQUARE_SIZE, null);
