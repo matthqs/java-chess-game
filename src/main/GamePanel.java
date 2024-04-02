@@ -149,6 +149,7 @@ public class GamePanel extends JPanel implements Runnable{
                 if(validSquare){
                     copyPieces(simPieces, pieces);
                     activeP.updatePosition();
+                    changePlayer();
                 }
                 else {
                     activeP.resetPosition();
@@ -186,6 +187,16 @@ public class GamePanel extends JPanel implements Runnable{
 
     }
 
+    private void changePlayer() {
+        if(currentColor == WHITE){
+            currentColor = BLACK;
+        }
+        else {
+            currentColor = WHITE;
+        }
+        activeP = null;
+    }
+
     // Method to draw the game components
     public void paintComponent(Graphics g){
 
@@ -219,6 +230,17 @@ public class GamePanel extends JPanel implements Runnable{
             activeP.draw(g2);
         }
 
+        // status message
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g2.setFont(new Font("Book Antiqua", Font.PLAIN, 40));
+        g2.setColor(Color.white);
+
+        if(currentColor == WHITE) {
+            g2.drawString("White's Turn", 840, 550);
+        }
+        else {
+            g2.drawString("Black's Turn", 840, 250);
+        }
     }
 
 
