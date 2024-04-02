@@ -15,6 +15,7 @@ public class Piece {
     public int col, row, preCol, preRow;
     public int color;
     public Piece hittingP;
+    public boolean moved;
 
     public Piece(int color, int col, int row){
 
@@ -72,6 +73,7 @@ public class Piece {
         y = getY(row);
         preCol = getCol(x);
         preRow = getRow(y);
+        moved = true;
     }
 
     public void resetPosition(){
@@ -169,7 +171,7 @@ public class Piece {
         return null;
     }
 
-    public boolean isPieceOnDiagonalLine(int targetCol, int targetRow){
+    public boolean pieceIsOnDiagonalLine(int targetCol, int targetRow){
             // top left
             if(targetRow < preRow){
                 for (int c = preCol-1; c > targetCol; c--){
