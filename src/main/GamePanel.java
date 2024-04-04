@@ -211,9 +211,24 @@ public class GamePanel extends JPanel implements Runnable{
 
             checkCastling();
 
-            validSquare = true;
+            if(!isIllegal(activeP)) {
+                validSquare = true;
+            }
+
         }
 
+    }
+
+    public boolean isIllegal (Piece king) {
+
+        if(king.type == Type.KING) {
+            for(Piece piece : simPieces) {
+                if (piece != king && piece.color != king.color && piece.canMove(king.col, king.row)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void checkCastling() {
@@ -314,13 +329,26 @@ public class GamePanel extends JPanel implements Runnable{
         if(activeP != null){
 
             if(canMove){
+
+                if(isIllegal(activeP)) {
+                    // Color the square in which piece is being held up before moving
+                    Color myColor = new Color(238, 95, 95); // Red in RGB
+                    g2.setColor(myColor);
+                    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
+                    g2.fillRect(activeP.col*Board.SQUARE_SIZE, activeP.row*Board.SQUARE_SIZE,
+                            Board.SQUARE_SIZE, Board.SQUARE_SIZE);
+                    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f));
+                }
+                else {
+
                 // Color the square in which piece is being held up before moving
-                Color myColor = new Color(130, 227, 133); // Red in RGB
+                Color myColor = new Color(130, 227, 133); // Green in RGB
                 g2.setColor(myColor);
                 g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
                 g2.fillRect(activeP.col*Board.SQUARE_SIZE, activeP.row*Board.SQUARE_SIZE,
                         Board.SQUARE_SIZE, Board.SQUARE_SIZE);
                 g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f));
+                }
             }
 
             // Redraw the piece so it doesn't get its opacity changed
