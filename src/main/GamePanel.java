@@ -34,6 +34,7 @@ public class GamePanel extends JPanel implements Runnable{
     boolean validSquare;
     boolean promotion;
     boolean gameover;
+    boolean stalemate;
 
     public GamePanel(){
         setPreferredSize(new Dimension(WIDTH,HEIGHT));
@@ -126,15 +127,15 @@ public class GamePanel extends JPanel implements Runnable{
     // Method to update game state
     private void update(){
 
-        if(promotion){
+        if(promotion) {
             promoting();
         }
-        else if (!gameover){
+        else if (!gameover && !stalemate) {
             // MOUSE BUTTON PRESSED
-            if(mouse.pressed){
-                if(activeP == null){
+            if(mouse.pressed) {
+                if(activeP == null) {
                     // If activeP is null, check if you can pick up a piece
-                    for(Piece piece : simPieces){
+                    for(Piece piece : simPieces) {
                         //If mouse is on an ally piece, pick the piece
                         if(piece.color == currentColor &&
                                 piece.col == mouse.x/Board.SQUARE_SIZE &&
@@ -155,17 +156,18 @@ public class GamePanel extends JPanel implements Runnable{
 
                 if(activeP != null){
 
-                    if(validSquare){
+                    if(validSquare) {
                         copyPieces(simPieces, pieces);
                         activeP.updatePosition();
 
-                        if(castlingP != null){
+                        if (castlingP != null) {
                             castlingP.updatePosition();
                         }
 
-                        if(isKingInCheck() && isCheckmate()) {
-
+                        if (isKingInCheck() && isCheckmate()) {
                             gameover = true;
+                        } else if(isStalemate()) {
+                            stalemate = true;
                         }
                         else{ // the game continues
                             if(canPromote()) {
@@ -277,6 +279,27 @@ public class GamePanel extends JPanel implements Runnable{
             }
         }
         return king;
+    }
+
+    private boolean isStalemate() {
+
+        int count = 0;
+        //count number of pieces
+        for(Piece piece: simPieces) {
+            if(piece.color != currentColor) {
+                count++;
+            }
+        }
+
+        // if only one piece (the king) is left
+        if(count == 1) {
+            // if king cannot move then its stalemate
+            if(!kingCanMove(getKing(true))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void checkCastling() {
@@ -597,5 +620,13 @@ public class GamePanel extends JPanel implements Runnable{
             g2.setColor(ColorUIResource.green);
             g2.drawString(s, 200, 420);
         }
+
+        if(stalemate) {
+
+            g2.setFont((new Font("Arial", Font.PLAIN, 90)));
+            g2.setColor(Color.GRAY);
+            g2.drawString("Stalemate!", 200, 420);
+        }
+
     }
 }
