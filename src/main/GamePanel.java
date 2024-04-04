@@ -70,7 +70,7 @@ public class GamePanel extends JPanel implements Runnable{
         pieces.add(new Knight(WHITE, 6, 7));
         pieces.add(new Bishop(WHITE, 2, 7));
         pieces.add(new Bishop(WHITE, 5, 7));
-        pieces.add(new Queen(WHITE, 3, 4));
+        pieces.add(new Queen(WHITE, 3, 7));
         pieces.add(new King(WHITE, 4, 7));
 
         // BLACK SIDE
@@ -622,7 +622,6 @@ public class GamePanel extends JPanel implements Runnable{
         }
 
         if(stalemate) {
-
             g2.setFont((new Font("Arial", Font.PLAIN, 90)));
             g2.setColor(Color.GRAY);
             g2.drawString("Stalemate!", 200, 420);
